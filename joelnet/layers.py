@@ -93,6 +93,7 @@ class Activation(Layer):
 def tanh(x: Tensor) -> Tensor:
     return np.tanh(x)
 
+
 def tanh_prime(x: Tensor) -> Tensor:
     y = tanh(x)
     return 1 - y ** 2
@@ -101,3 +102,21 @@ def tanh_prime(x: Tensor) -> Tensor:
 class Tanh(Activation):
     def __init__(self):
         super().__init__(tanh, tanh_prime)
+
+
+class RELU(Activation):
+    """A rectified linear unit (RELU_)
+
+    .. _RELU: https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
+    """
+
+    def relu(self, x: Tensor) -> Tensor:
+        #  return x * (x > 0)
+        return np.maximum(x - self.cutoff, 0)
+
+    def relu_prime(self, x: Tensor) -> Tensor:
+        return np.heaviside(x - self.cutoff, 0)
+
+    def __init__(self, cutoff: float = 0.):
+        self.cutoff = cutoff
+        super().__init__(self.relu, self.relu_prime)
